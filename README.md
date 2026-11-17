@@ -199,6 +199,18 @@ Install Excel import support for `process_consumption_file` with:
 
 ---
 
+## Demand data validation (EN-04)
+
+Historical callers retain `data_mode='legacy'`. Select `data_mode='corrected'`
+in `PCSEnv` for date-aligned demand, finite-data checks and prediction alignment.
+Corrected mode rejects missing demand by default; optional interpolation requires
+explicit data partitions and preserves the raw CSVs.
+
+See [EN-04 demand data](docs/EN-04-demand-data.md) for configuration, preprocessing
+rules, and the reproducible selected-sample audit.
+
+---
+
 ## Contributing
 
 This project is developed by [CLAIR-LAB-TECHNION](https://github.com/CLAIR-LAB-TECHNION). Contributions, issues, and feature requests are welcome!

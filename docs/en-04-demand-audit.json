@@ -1,0 +1,913 @@
+{
+  "code_revision": "2eb399de721a03e8789f70106a8cb9a5197101e3",
+  "working_tree_dirty": true,
+  "code_sha256": {
+    "energy_net/common/demand_data.py": "480d660d182916212b0e604af403586f95fd897fcde1e6ff273e13e568711992",
+    "energy_net/gym_envs/pcs_env.py": "22de377dd1c5df01035ff1842715a39b3c743df3b14fa55d0e6198daf7f49c5c",
+    "energy_net/grid_entities/consumption/consumption_dynamics.py": "1acf2aded6256b47fbdc2a0b3ca2941d1d6ccdec3c2384670c61dce5be0c1b2e",
+    "scripts/audit_demand_data.py": "3766fb51a608167569dea53b2a2a09b53bfcacd295e57e3d5708397ffe39f13e"
+  },
+  "data_mode": "corrected",
+  "price_strategy": "SineWavePriceStrategy",
+  "prediction_sha256": "c0f64b09cd8a251a0e3e4e19d1fc3d4a32ddf69562172392c9cbab211900d4d5",
+  "preprocessing": {
+    "source_sha256": "193da9209892c9e856c7688bfc540d68ce7e9714f5bf814302f36c16662ee0e4",
+    "missing_data_policy": "interpolate",
+    "dt_days": 0.020833333333333332,
+    "sample_count": 7008,
+    "partitions": [
+      {
+        "name": "train",
+        "start": "2025-07-09T00:00:00",
+        "end": "2025-10-07T00:00:00"
+      },
+      {
+        "name": "unused",
+        "start": "2025-10-07T00:00:00",
+        "end": "2025-10-27T00:00:00"
+      },
+      {
+        "name": "evaluation",
+        "start": "2025-10-27T00:00:00",
+        "end": "2025-11-06T00:00:00"
+      },
+      {
+        "name": "remaining",
+        "start": "2025-11-06T00:00:00",
+        "end": "2025-12-02T00:00:00"
+      }
+    ],
+    "changes": [
+      {
+        "timestamp": "2025-07-14T11:00:00",
+        "original": null,
+        "value": 4.302115
+      },
+      {
+        "timestamp": "2025-10-26T00:00:00",
+        "original": null,
+        "value": 1.578292
+      },
+      {
+        "timestamp": "2025-10-26T00:30:00",
+        "original": null,
+        "value": 1.359124
+      },
+      {
+        "timestamp": "2025-10-26T01:00:00",
+        "original": null,
+        "value": 1.139956
+      },
+      {
+        "timestamp": "2025-10-26T01:30:00",
+        "original": null,
+        "value": 0.920788
+      },
+      {
+        "timestamp": "2025-11-17T16:00:00",
+        "original": null,
+        "value": 2.2695055555555554
+      },
+      {
+        "timestamp": "2025-11-17T16:30:00",
+        "original": null,
+        "value": 2.2827711111111113
+      },
+      {
+        "timestamp": "2025-11-17T17:00:00",
+        "original": null,
+        "value": 2.2960366666666667
+      },
+      {
+        "timestamp": "2025-11-17T17:30:00",
+        "original": null,
+        "value": 2.309302222222222
+      },
+      {
+        "timestamp": "2025-11-17T18:00:00",
+        "original": null,
+        "value": 2.322567777777778
+      },
+      {
+        "timestamp": "2025-11-17T18:30:00",
+        "original": null,
+        "value": 2.3358333333333334
+      },
+      {
+        "timestamp": "2025-11-17T19:00:00",
+        "original": null,
+        "value": 2.349098888888889
+      },
+      {
+        "timestamp": "2025-11-17T19:30:00",
+        "original": null,
+        "value": 2.3623644444444447
+      }
+    ]
+  },
+  "selected_sample_count": 4800,
+  "distinct_load_profiles": 100,
+  "distinct_price_profiles": 1,
+  "profiles": [
+    {
+      "start_date": "2025-07-09T00:00:00",
+      "sample_count": 48,
+      "total_load": 175.65466,
+      "mean_load": 3.6594720833333336,
+      "load_sha256": "982d017652ea9848368e398d69441009d0a3e48d170b51e4b49483b91b127b27",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-10T00:00:00",
+      "sample_count": 48,
+      "total_load": 179.05651,
+      "mean_load": 3.7303439583333335,
+      "load_sha256": "072b073288c514fa6d816a39af05358a18fef446b7443a11f98a846c6fc6cb8a",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-11T00:00:00",
+      "sample_count": 48,
+      "total_load": 188.42151,
+      "mean_load": 3.9254481250000004,
+      "load_sha256": "f810d41c1213e772ab771a8e777b653c0913be9431f3512af2b7f1b86418d67a",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-12T00:00:00",
+      "sample_count": 48,
+      "total_load": 155.30394,
+      "mean_load": 3.23549875,
+      "load_sha256": "9378d16373066744fac052ad34881bace9644ae316621cf6986e41c7b87381a5",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-13T00:00:00",
+      "sample_count": 48,
+      "total_load": 183.96553,
+      "mean_load": 3.8326152083333334,
+      "load_sha256": "ff39e4331d19c5b0a911fe695fd598d274e60565d5eb9e8dfbebf3fe1dd0bf6a",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-14T00:00:00",
+      "sample_count": 48,
+      "total_load": 173.829205,
+      "mean_load": 3.6214417708333335,
+      "load_sha256": "b52eac864361c74088113415f19fed8f640e3b21086acf354815d0aa0dcced53",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-15T00:00:00",
+      "sample_count": 48,
+      "total_load": 182.67901999999998,
+      "mean_load": 3.805812916666666,
+      "load_sha256": "b1bbe7e68aaa7c064a9f3f9f8249e505a1e7318d2d27c009dfdd6ef9ef65a9f6",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-16T00:00:00",
+      "sample_count": 48,
+      "total_load": 185.20628000000002,
+      "mean_load": 3.8584641666666672,
+      "load_sha256": "28d07c8eb1fc3e8e42c37314989f6d22483f0e11300dd346281440bf9265c8a8",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-17T00:00:00",
+      "sample_count": 48,
+      "total_load": 200.91595,
+      "mean_load": 4.185748958333334,
+      "load_sha256": "667bea4dd0d5fd0dd4ac8f175e55ea652989fafcc93f5cf8607adc68b731cee5",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-18T00:00:00",
+      "sample_count": 48,
+      "total_load": 181.93482,
+      "mean_load": 3.79030875,
+      "load_sha256": "3e18b56c2f0ed4b0e173a72aa71c146c33311c45155f8334fb2ea19905dc811d",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-19T00:00:00",
+      "sample_count": 48,
+      "total_load": 157.57469,
+      "mean_load": 3.282806041666667,
+      "load_sha256": "e89030692f2aec22a744ebd4aa8f79c040b984432b43f69f2d862675044c111d",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-20T00:00:00",
+      "sample_count": 48,
+      "total_load": 180.26888,
+      "mean_load": 3.7556016666666667,
+      "load_sha256": "94d3773c3698fc02ec69fdbd9c0892ebd879f2061557aebf57fb2d5331a3c460",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-21T00:00:00",
+      "sample_count": 48,
+      "total_load": 192.09206999999998,
+      "mean_load": 4.0019181249999995,
+      "load_sha256": "bd065f22c7399507558b229a5c37b1cf3cfa36cd9af314c33fa3025afeff82ae",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-22T00:00:00",
+      "sample_count": 48,
+      "total_load": 209.30475,
+      "mean_load": 4.360515625000001,
+      "load_sha256": "dff6804de6cef49d7bf7bbedc994e2af473abe0f6dc69b394aba4235b5ee3fd9",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-23T00:00:00",
+      "sample_count": 48,
+      "total_load": 222.37929,
+      "mean_load": 4.632901875,
+      "load_sha256": "ac804a7e9a7f57de3ed6f0b9004448ddf3b744646139f59d08f66c122bf394a4",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-24T00:00:00",
+      "sample_count": 48,
+      "total_load": 226.01234,
+      "mean_load": 4.708590416666667,
+      "load_sha256": "cd81d8f83b9ccba996798f97ebb4cb6eb4fe871a879b00349538dfa07265de77",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-25T00:00:00",
+      "sample_count": 48,
+      "total_load": 206.7863,
+      "mean_load": 4.308047916666667,
+      "load_sha256": "8a9f5cad2923ecef868447a059e0681b83056ad0ff66e09e7e4e4d20d1858d86",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-26T00:00:00",
+      "sample_count": 48,
+      "total_load": 204.85281,
+      "mean_load": 4.267766875,
+      "load_sha256": "59b472454ac22c23f855f968ae76230e24e73f47814df4635ee6a0b06c7c61ff",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-27T00:00:00",
+      "sample_count": 48,
+      "total_load": 224.11668,
+      "mean_load": 4.6690975,
+      "load_sha256": "e6893ba9a93cc14edbefbbd4b1d49406bafa3e7df7cbb6103c5040b4fd48b8ff",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-28T00:00:00",
+      "sample_count": 48,
+      "total_load": 235.29764,
+      "mean_load": 4.902034166666667,
+      "load_sha256": "3b1574299fd0735f3114bcf940c56b1d66d3c2a2d9e6e5524e6da1e45ef9ab3a",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-29T00:00:00",
+      "sample_count": 48,
+      "total_load": 209.15535,
+      "mean_load": 4.357403125,
+      "load_sha256": "b7f503fa2f6c68ab8955ccf9256d2aaa3047e5cfd5c9273038bca831309f5101",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-30T00:00:00",
+      "sample_count": 48,
+      "total_load": 198.80696,
+      "mean_load": 4.1418116666666664,
+      "load_sha256": "8ebbc507ff82a8a4f53654d96d90c5abaeed2012e0f59a8beabc68f9c91fd5d0",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-07-31T00:00:00",
+      "sample_count": 48,
+      "total_load": 179.10581000000002,
+      "mean_load": 3.731371041666667,
+      "load_sha256": "cb9d4a76d7774b9ff7c24f7f18fbcee2d695b855885671d487a319e4680409fd",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-01T00:00:00",
+      "sample_count": 48,
+      "total_load": 186.06736999999998,
+      "mean_load": 3.8764035416666665,
+      "load_sha256": "afac9cda71a36fe8040e20156050682dabf8c44340aee7ce73cd10f3c13995d0",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-02T00:00:00",
+      "sample_count": 48,
+      "total_load": 167.92763,
+      "mean_load": 3.4984922916666665,
+      "load_sha256": "f41962c7c21d4866205763cdff888e07d09276fe9e0c0a66225e91033745c7de",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-03T00:00:00",
+      "sample_count": 48,
+      "total_load": 185.04107,
+      "mean_load": 3.8550222916666663,
+      "load_sha256": "0ad9b941e82aa0f8483b4ad234a16ed935b0639ea5348b398156699a0e417f42",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-04T00:00:00",
+      "sample_count": 48,
+      "total_load": 190.92545,
+      "mean_load": 3.977613541666667,
+      "load_sha256": "e313258d320f5b7660fde84ab9da0313bfa0dd74100633ec9c84c16492cc07a0",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-05T00:00:00",
+      "sample_count": 48,
+      "total_load": 177.12107,
+      "mean_load": 3.6900222916666667,
+      "load_sha256": "7644c9fcf234e9ce82c0ca527159c9e2fd90b9f3f4431aa876e145171cc2d350",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-06T00:00:00",
+      "sample_count": 48,
+      "total_load": 217.77783,
+      "mean_load": 4.537038125,
+      "load_sha256": "20376397543cab87a6a07d2a510c05064cb5ae917d34578221031eafdf0b54b7",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-07T00:00:00",
+      "sample_count": 48,
+      "total_load": 201.51326,
+      "mean_load": 4.198192916666667,
+      "load_sha256": "1813a82f4dea065ee508c104e245629e4d0fe70a9df3f82be6d6728ec711c449",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-08T00:00:00",
+      "sample_count": 48,
+      "total_load": 199.87242,
+      "mean_load": 4.16400875,
+      "load_sha256": "88742ed00a4d68aa0101790e6dbceb7d2f2de440d5277bfc486cfe9211d45235",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-09T00:00:00",
+      "sample_count": 48,
+      "total_load": 206.38194000000001,
+      "mean_load": 4.29962375,
+      "load_sha256": "5b819a4a191c2fac80a8b2eb7090fc4eb50b1c379e39c22dcb5e8eacc638dc82",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-10T00:00:00",
+      "sample_count": 48,
+      "total_load": 229.00045,
+      "mean_load": 4.770842708333333,
+      "load_sha256": "e9aee67a1f242c47694a0d7564f721bac65b0362ef22472b3c876075e33b353f",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-11T00:00:00",
+      "sample_count": 48,
+      "total_load": 237.21031,
+      "mean_load": 4.9418814583333335,
+      "load_sha256": "c63b929d5f687e0ff3a2dddc9454bb8233358f1a30d71834c6da84fba65db5e9",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-12T00:00:00",
+      "sample_count": 48,
+      "total_load": 236.91532999999998,
+      "mean_load": 4.935736041666666,
+      "load_sha256": "9419c556808ccc97811146bc55d9b0bc7408d651f6ba01da6f3b90fedc455e3e",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-13T00:00:00",
+      "sample_count": 48,
+      "total_load": 258.20173,
+      "mean_load": 5.379202708333334,
+      "load_sha256": "436419b3ee143db1715ad8e18ae476071db37c13259edbd8dd134a57daaee3cd",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-14T00:00:00",
+      "sample_count": 48,
+      "total_load": 264.17177000000004,
+      "mean_load": 5.503578541666667,
+      "load_sha256": "1f6d11ed88b7415583792b4a80707386bc96836a9a2a6319fc5a7d30249d3f3f",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-15T00:00:00",
+      "sample_count": 48,
+      "total_load": 243.61045000000001,
+      "mean_load": 5.075217708333334,
+      "load_sha256": "7b11a7a4520d08cd3c2fdadc45d7363bf0b02354b7b5c8a700337ff44ab5ddb5",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-16T00:00:00",
+      "sample_count": 48,
+      "total_load": 210.09749999999997,
+      "mean_load": 4.377031249999999,
+      "load_sha256": "8bddce18416a90dfd272848e2d945a7d12dba642dd770a584634aa63001b52ef",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-17T00:00:00",
+      "sample_count": 48,
+      "total_load": 198.84564,
+      "mean_load": 4.1426175,
+      "load_sha256": "34a44342bad3a122fdd730f39d918c5f9339d0c5d6a4b3429db00a29c51aa954",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-18T00:00:00",
+      "sample_count": 48,
+      "total_load": 185.06117,
+      "mean_load": 3.855441041666667,
+      "load_sha256": "6d76c602dd4fc69471a67d2f49fed057d9a2958e5bdae99874c73e8a3b54a0ef",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-19T00:00:00",
+      "sample_count": 48,
+      "total_load": 190.68256000000002,
+      "mean_load": 3.972553333333334,
+      "load_sha256": "709485b0e2bfa85fad04ccaf427b8ce3a02d40b183bbd53c3710c476feba3e6c",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-20T00:00:00",
+      "sample_count": 48,
+      "total_load": 197.7584,
+      "mean_load": 4.1199666666666666,
+      "load_sha256": "76c21c01d55ee3b3e20e0f2ea47bbc092c8a2acf25a25e26b9a02570db1caf88",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-21T00:00:00",
+      "sample_count": 48,
+      "total_load": 210.67989,
+      "mean_load": 4.389164375,
+      "load_sha256": "e52b6564b5ca1c59e7d9333597bd587909356573daa1849c87cf8b9378d00787",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-22T00:00:00",
+      "sample_count": 48,
+      "total_load": 170.74571,
+      "mean_load": 3.5572022916666666,
+      "load_sha256": "92e8969a58323f7c3b3ab7851e655ec71bbc2e1a68061b6e9c6713884a750677",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-23T00:00:00",
+      "sample_count": 48,
+      "total_load": 191.82835,
+      "mean_load": 3.996423958333333,
+      "load_sha256": "f8933ef9692e52394a21313e790532a4bf52caab159702109a1c0e93b4091d1b",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-24T00:00:00",
+      "sample_count": 48,
+      "total_load": 204.80831999999998,
+      "mean_load": 4.266839999999999,
+      "load_sha256": "20c705d9ec5deab4692481eda2da9af839c54ab231353cf93a1ef219915add6b",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-25T00:00:00",
+      "sample_count": 48,
+      "total_load": 200.18867,
+      "mean_load": 4.170597291666667,
+      "load_sha256": "93a5ed7cb233f1d751970da4727a829bb2ebf8c331df5ec8b882e342abe64f38",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-26T00:00:00",
+      "sample_count": 48,
+      "total_load": 187.55792,
+      "mean_load": 3.9074566666666666,
+      "load_sha256": "6e726f862337598b02cce8843dee16129fb3f638790a87293365c6bbc0be2b53",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-27T00:00:00",
+      "sample_count": 48,
+      "total_load": 178.84208,
+      "mean_load": 3.7258766666666667,
+      "load_sha256": "1284a5c5b30d286c9b220f38bb93f203836add6b25e28f8733be64dfdb7a5e14",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-28T00:00:00",
+      "sample_count": 48,
+      "total_load": 192.90001,
+      "mean_load": 4.0187502083333335,
+      "load_sha256": "8ba3f772a47727f1fd45ebd69c2ef865dfa6969ea56c9bbbbb2dc6d1f6eee96a",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-29T00:00:00",
+      "sample_count": 48,
+      "total_load": 160.99222,
+      "mean_load": 3.3540045833333334,
+      "load_sha256": "a5b6973305a4ce67adfcbd3f0ea936263daad9a5928ed4ada8ac75a10f3e9012",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-30T00:00:00",
+      "sample_count": 48,
+      "total_load": 132.83149000000003,
+      "mean_load": 2.767322708333334,
+      "load_sha256": "01895e111687f4073e49d9f1eb2048b7d8ac81300cd2210975c16b43461cd483",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-08-31T00:00:00",
+      "sample_count": 48,
+      "total_load": 161.50328,
+      "mean_load": 3.3646516666666666,
+      "load_sha256": "0ea29aabdb6ae0ef028521031a658e9e457340944cc02a6bb8e8af49f92bdf01",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-01T00:00:00",
+      "sample_count": 48,
+      "total_load": 175.75276,
+      "mean_load": 3.661515833333333,
+      "load_sha256": "7d2b911ae1abcdae33586c5bed8b62188c0fb0c08ec7739f916c02c34a5f2817",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-02T00:00:00",
+      "sample_count": 48,
+      "total_load": 197.32772,
+      "mean_load": 4.110994166666667,
+      "load_sha256": "7cbf3197c2c65d0cb4bf6f28e517faac546832ac28b6fde3ab2e5049da2b0407",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-03T00:00:00",
+      "sample_count": 48,
+      "total_load": 175.25939000000002,
+      "mean_load": 3.6512372916666673,
+      "load_sha256": "57c98e706b3d4289b1dd44286e820f0de05a472439a240ff1cd6ed339b4f4ca8",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-04T00:00:00",
+      "sample_count": 48,
+      "total_load": 166.92371000000003,
+      "mean_load": 3.4775772916666674,
+      "load_sha256": "1ef0cd221b3b186161816a47e9b996692ed806ab0e93f1d76b99e32f396d947e",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-05T00:00:00",
+      "sample_count": 48,
+      "total_load": 168.33117,
+      "mean_load": 3.5068993749999997,
+      "load_sha256": "c2695226f090255486f49f788a9ad3713e82fa913f36fffd2a7e087bec0e90d3",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-06T00:00:00",
+      "sample_count": 48,
+      "total_load": 156.35766,
+      "mean_load": 3.2574512500000004,
+      "load_sha256": "412bee3cf4a405985bc0ef4201aee0f2cb9dcae85e501435996f98190990eae3",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-07T00:00:00",
+      "sample_count": 48,
+      "total_load": 148.86738,
+      "mean_load": 3.10140375,
+      "load_sha256": "fcbd4654964c1c50a1cb8df79fc9dad457bf472c59e154d48bf18d6d364c95da",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-08T00:00:00",
+      "sample_count": 48,
+      "total_load": 167.42548,
+      "mean_load": 3.488030833333333,
+      "load_sha256": "a993776bc0d20c351bf90ee0b4da2ab03e352443ba9e9e5fb5b448e590d4b965",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-09T00:00:00",
+      "sample_count": 48,
+      "total_load": 161.13124,
+      "mean_load": 3.356900833333333,
+      "load_sha256": "8d1de3ac462a96634cc3e3874de73b70c0ed741ea3c7fc731b7e90f7d05d2938",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-10T00:00:00",
+      "sample_count": 48,
+      "total_load": 163.84843,
+      "mean_load": 3.4135089583333333,
+      "load_sha256": "7e27a3449ef8dbe8b7bacc7b88fb8e45f143a1dad1ae4acd9e52f7d091796f17",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-11T00:00:00",
+      "sample_count": 48,
+      "total_load": 182.44400000000002,
+      "mean_load": 3.800916666666667,
+      "load_sha256": "acba063efd625cc803cc9bcee97fbc4a60452310495125e9a927032d4a37023f",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-12T00:00:00",
+      "sample_count": 48,
+      "total_load": 166.35264999999998,
+      "mean_load": 3.465680208333333,
+      "load_sha256": "5edcb5eb9ad3333f6e92aadf3e4e241940a5fb75bea839488e9e576f8e21c1f5",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-13T00:00:00",
+      "sample_count": 48,
+      "total_load": 142.49878999999999,
+      "mean_load": 2.9687247916666664,
+      "load_sha256": "c5d04f6162b6b1ba94718533b97aa485883ecb39c23bf05edb03a22cf6945c20",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-14T00:00:00",
+      "sample_count": 48,
+      "total_load": 165.02045999999999,
+      "mean_load": 3.43792625,
+      "load_sha256": "06095b5dce75d92788e55e77116f46c13df5a51b7a1db843fb9c713f20db20fc",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-15T00:00:00",
+      "sample_count": 48,
+      "total_load": 198.79892,
+      "mean_load": 4.141644166666667,
+      "load_sha256": "011cda74719cc11d4e751d468dbf39709726d019fe38ee71f26bc3501d042249",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-16T00:00:00",
+      "sample_count": 48,
+      "total_load": 169.54154999999997,
+      "mean_load": 3.5321156249999994,
+      "load_sha256": "00db5f2df0458d6186a4df4fb7554aced6fe91f7ca3cf9cba21eece2f997aeea",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-17T00:00:00",
+      "sample_count": 48,
+      "total_load": 162.96115,
+      "mean_load": 3.3950239583333333,
+      "load_sha256": "9aad65f2ac0c1ee338ba814d4813eee856fe24ab4b6b5e92621bd4d0e66f51b2",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-18T00:00:00",
+      "sample_count": 48,
+      "total_load": 165.64888000000002,
+      "mean_load": 3.4510183333333337,
+      "load_sha256": "8d006226b7065607f30b696ef4023f85cda50fa2d1c4173b4cd99ac30bb46ace",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-19T00:00:00",
+      "sample_count": 48,
+      "total_load": 151.55915,
+      "mean_load": 3.1574822916666663,
+      "load_sha256": "5de96c676bbac74dedc692f977f732f7f83ece8a1bf7e12ecf58a214f07f4af8",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-20T00:00:00",
+      "sample_count": 48,
+      "total_load": 124.17572000000001,
+      "mean_load": 2.586994166666667,
+      "load_sha256": "f67682bea28b7e540bafd7ee560306971e2ee85275da66cc57410dec5be5e733",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-21T00:00:00",
+      "sample_count": 48,
+      "total_load": 154.96524,
+      "mean_load": 3.2284425,
+      "load_sha256": "c5af769d89335d958bf249d6e4eeb6bec27142e07bef3ef1fdef58030224889f",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-22T00:00:00",
+      "sample_count": 48,
+      "total_load": 158.76766,
+      "mean_load": 3.3076595833333333,
+      "load_sha256": "df4b28c7a0966f3fd428923d9bace09d7bb804c1d19a0aef6b7c422f30dd5b65",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-23T00:00:00",
+      "sample_count": 48,
+      "total_load": 137.06772999999998,
+      "mean_load": 2.855577708333333,
+      "load_sha256": "c40fe349f23ed6da977e85de3436f0237958db553fc5540edef7ef9c5a9e0b0a",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-24T00:00:00",
+      "sample_count": 48,
+      "total_load": 126.54662,
+      "mean_load": 2.6363879166666666,
+      "load_sha256": "571330c10397af7848f9584b825b68c2f7faed4a07e62d81cff45bbf54d2730c",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-25T00:00:00",
+      "sample_count": 48,
+      "total_load": 131.83741999999998,
+      "mean_load": 2.7466129166666664,
+      "load_sha256": "5560553be7f251b9308a367568fa988743adb420d71eab2903f9005aee19da29",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-26T00:00:00",
+      "sample_count": 48,
+      "total_load": 124.03592,
+      "mean_load": 2.5840816666666666,
+      "load_sha256": "fb5c2f5e6ede449395b5b7173d2a6b361f31d2a297f25b12b3c0f0406062d1d8",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-27T00:00:00",
+      "sample_count": 48,
+      "total_load": 110.52859,
+      "mean_load": 2.3026789583333334,
+      "load_sha256": "ce6eaea9fd25e297078da98e87200381db64534ebdc9f97b901de14fa3741493",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-28T00:00:00",
+      "sample_count": 48,
+      "total_load": 156.49581999999998,
+      "mean_load": 3.260329583333333,
+      "load_sha256": "9f31b32e72361dc66c644abdf8a09086443b5332a73d1d878699b27b34c382cc",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-29T00:00:00",
+      "sample_count": 48,
+      "total_load": 128.86494,
+      "mean_load": 2.68468625,
+      "load_sha256": "fcf2b573b2ebd09d030130157ef201c984bb4cbe6a14dd8d32b49764b7f4f2de",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-09-30T00:00:00",
+      "sample_count": 48,
+      "total_load": 148.14462,
+      "mean_load": 3.08634625,
+      "load_sha256": "07205fdd419e68d509dd54bd9fdd8a5ec6889b91d19aa65bc4932801b1adb17b",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-01T00:00:00",
+      "sample_count": 48,
+      "total_load": 116.90389,
+      "mean_load": 2.4354977083333336,
+      "load_sha256": "99be61d16a2e20f99474644c95913493f371df7d0cb1eb93fa5ffd5096438467",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-02T00:00:00",
+      "sample_count": 48,
+      "total_load": 72.47462,
+      "mean_load": 1.5098879166666668,
+      "load_sha256": "c2fb7e3ffa27e5fbc04f5cf00d2ae55c620044ef02a8f4d677afe0c39bec7e40",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-03T00:00:00",
+      "sample_count": 48,
+      "total_load": 121.80614,
+      "mean_load": 2.5376279166666666,
+      "load_sha256": "f2752bff5a4584817a05d6334e86b15792f32eccee89ab057ed8380f66be90da",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-04T00:00:00",
+      "sample_count": 48,
+      "total_load": 119.22284,
+      "mean_load": 2.4838091666666666,
+      "load_sha256": "a461ca18caea929bedd31e95218ee29675dc1e58990d270b97ce37257ed6d345",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-05T00:00:00",
+      "sample_count": 48,
+      "total_load": 130.28148,
+      "mean_load": 2.7141974999999996,
+      "load_sha256": "130b09d5a8fe535f24b30c30478ff33b79c996ace35ec4a3044c8a014d31510a",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-06T00:00:00",
+      "sample_count": 48,
+      "total_load": 108.4718,
+      "mean_load": 2.2598291666666666,
+      "load_sha256": "6f5435a887d8ab5a0e20d54a8924cb3db1cd15408ae4f16c91797f4e1c5315df",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-27T00:00:00",
+      "sample_count": 48,
+      "total_load": 106.30196000000001,
+      "mean_load": 2.214624166666667,
+      "load_sha256": "1d09cc824ef754f8fe0f9b078640bd9a588d622a8eb998409fd53e62fd02d8f2",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-28T00:00:00",
+      "sample_count": 48,
+      "total_load": 98.23151999999999,
+      "mean_load": 2.04649,
+      "load_sha256": "61d4a77f2821ec22052c2e8b79ce65b35455bd28315366ef9dffc5c1e969610d",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-29T00:00:00",
+      "sample_count": 48,
+      "total_load": 105.81382,
+      "mean_load": 2.2044545833333333,
+      "load_sha256": "2e01edbe22d3f5b4e20cd747a7415464cb6b24708ce35bdc7de8b72e28e20031",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-30T00:00:00",
+      "sample_count": 48,
+      "total_load": 101.14831,
+      "mean_load": 2.107256458333333,
+      "load_sha256": "621d0043c56c105b6d36a8800266956630599a750bc516efaf9ca13d32fc4313",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-10-31T00:00:00",
+      "sample_count": 48,
+      "total_load": 85.63637,
+      "mean_load": 1.7840910416666667,
+      "load_sha256": "ba0411e43c7d0a9bb35e825c91ef2668d9ab9a4e0667c9542eda749a5b35b240",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-11-01T00:00:00",
+      "sample_count": 48,
+      "total_load": 80.61818,
+      "mean_load": 1.6795454166666666,
+      "load_sha256": "7e68ce38d8badafb0879b39531657383cb833357a58885dceccf6855c57ba8df",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-11-02T00:00:00",
+      "sample_count": 48,
+      "total_load": 99.88609,
+      "mean_load": 2.0809602083333334,
+      "load_sha256": "e6a4e79f5c4a315f56e2fe57ef415874d1750fa3ec67da23175315cfe9dbd43f",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-11-03T00:00:00",
+      "sample_count": 48,
+      "total_load": 101.58774,
+      "mean_load": 2.11641125,
+      "load_sha256": "3f34d09bf0bfd9c5090ca21e87e7147dcff7e21680af9e605d9143f3f71c7da0",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-11-04T00:00:00",
+      "sample_count": 48,
+      "total_load": 107.8711,
+      "mean_load": 2.2473145833333334,
+      "load_sha256": "7c24b2dbbdce390d981a63c9d16a124fb8c92f78067ea85f9525a38ddd11c8c6",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    },
+    {
+      "start_date": "2025-11-05T00:00:00",
+      "sample_count": 48,
+      "total_load": 125.56042000000001,
+      "mean_load": 2.6158420833333333,
+      "load_sha256": "9f05663654921c6b91e1bb9f844e6b73f1672ba9ad95f312732ab9c46b2c91f3",
+      "price_sha256": "c17c864c7be8e2d8c513cd8a9849e9f3cad7ab8a42755717cb8093cfd749a75e"
+    }
+  ]
+}

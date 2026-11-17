@@ -1,7 +1,7 @@
 """EN-02: minimal PCSEnv regressions with synthetic, half-hourly inputs.
 
 All quantities are PCSEnv internal units, not kW/kWh. Strict xfails expose
-known discrepancies without changing the simulator or blessing new semantics.
+the remaining shortage discrepancies. EN-04 date/data cases use corrected mode.
 """
 
 from datetime import timedelta
@@ -46,6 +46,7 @@ def make_env(tmp_path):
             predictions_file=str(predictions_file),
             price_strategy=price_strategy or FixedPriceStrategy(),
             verbosity=0,
+            data_mode='corrected',
         )
         environments.append(env)
         return env
@@ -119,8 +120,6 @@ def test_legacy_residual_demand_accounting(make_env):
 
 
 @pytest.mark.parametrize('phase', ['reset', 'step'])
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason='EN-04: PCSEnv uses episode-relative consumption time, ignoring selected day')
 def test_selected_date_controls_consumption(make_env, phase):
     loads = np.concatenate([np.full(48, 2.0), np.full(48, 5.0)])
     env = make_env(loads)
@@ -144,8 +143,6 @@ def test_csv_dynamics_can_select_two_days(make_env):
     assert dynamics.get_value(time=1.0) == pytest.approx(5)
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError,
-                   reason='EN-04: NaN at an existing CSV timestamp leaks into the observation')
 def test_missing_demand_is_rejected_or_kept_out_of_observations(make_env):
     """Allow explicit rejection or finite handling; no interpolation rule chosen."""
     loads = np.full(96, 3.0)

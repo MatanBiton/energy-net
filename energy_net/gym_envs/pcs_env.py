@@ -1,6 +1,7 @@
 import gymnasium as gym
 from gymnasium import spaces
 import pandas as pd
+from energy_net.common.demand_data import validate_time_index
 from energy_net.grid_entities.consumption.consumption_dynamics import CSV_DataConsumptionDynamics
 from energy_net.grid_entities.PCSUnit.pcs_unit import PCSUnit
 from energy_net.grid_entities.management.price_curve import PriceCurveStrategy, SineWavePriceStrategy
@@ -33,7 +34,13 @@ class PCSEnv(gym.Env):
                  action_scale=1.0,
                  price_strategy: PriceCurveStrategy = None,
                  render_mode: str | None = None,
-                 verbosity: int = 2):
+                 verbosity: int = 2,
+                 data_mode='legacy',
+                 missing_data_policy='error',
+                 data_partitions=None,
+                 settlement_mode='legacy',
+                 max_purchase_price=10.0,
+                 max_sale_price=10.0):
         """
         Initialize PCS environment.
         
@@ -43,6 +50,16 @@ class PCSEnv(gym.Env):
         Args:
             prediction_horizon: Number of future timesteps to include in observation.
                 If None, defaults to max_steps (full day visibility).
+            data_mode: 'legacy' preserves historical lookups; 'corrected' selects
+                dated, validated demand and aligned prediction/feature inputs.
+            missing_data_policy: Corrected demand policy, 'error' or 'interpolate'.
+            settlement_mode: 'legacy' preserves old rewards; 'corrected' enables
+                net-meter settlement and dual PCS-perspective price observations.
+                Requires corrected data, half-hour intervals and action_scale=1.
+            max_purchase_price, max_sale_price: Finite tariff bounds in internal
+                price units (default 10 each); choose explicitly per experiment.
+            data_partitions: Named (start, end) timestamp pairs, end exclusive.
+                Required for interpolation; partitions cannot exchange values.
         """
         super().__init__()
 
@@ -58,9 +75,35 @@ class PCSEnv(gym.Env):
         # -------------------------
         # Basic parameters
         # -------------------------
+        if data_mode not in ('legacy', 'corrected'):
+            raise ValueError("data_mode must be 'legacy' or 'corrected'")
+        self.data_mode = data_mode
+        if settlement_mode not in ('legacy', 'corrected'):
+            raise ValueError("settlement_mode must be 'legacy' or 'corrected'")
+        self.settlement_mode = settlement_mode
+        self.max_purchase_price = max_purchase_price
+        self.max_sale_price = max_sale_price
+        if settlement_mode == 'corrected':
+            if data_mode != 'corrected':
+                raise ValueError("Corrected settlement requires corrected data_mode")
+            if action_scale != 1.0:
+                raise ValueError("Corrected settlement requires action_scale=1")
+            if not all(np.isfinite(x) and x >= 0 for x in
+                       (max_purchase_price, max_sale_price)):
+                raise ValueError("Tariff upper bounds must be finite and nonnegative")
+            if not np.isclose(dt, 0.5 / 24):
+                raise ValueError("Corrected settlement requires half-hour intervals")
+        self._settled_prices = None
+        if data_mode == 'corrected':
+            if not np.isfinite(dt) or dt <= 0 or not np.isfinite(episode_length_days) or episode_length_days <= 0:
+                raise ValueError("Timestep and episode length must be positive and finite")
+            if not np.isclose(episode_length_days / dt, round(episode_length_days / dt)):
+                raise ValueError("Episode length must contain a whole number of timesteps")
         self.dt = dt
         self.episode_length_days = episode_length_days
         self.max_steps = int(episode_length_days / dt)
+        if self.data_mode == 'corrected':
+            self.max_steps = int(round(episode_length_days / dt))
         
         # Default prediction_horizon to full day if not specified
         if prediction_horizon is None:
@@ -89,11 +132,20 @@ class PCSEnv(gym.Env):
         # -------------------------
         # Load test data
         # -------------------------
-        self.test_df = pd.read_csv(
-            test_data_file,
-            index_col=0,
-            parse_dates=True
-        )
+        self.data_audit = None
+        if self.data_mode == 'corrected':
+            consumption_dynamics = CSV_DataConsumptionDynamics(params={
+                'data_file': test_data_file, 'data_mode': self.data_mode, 'dt': dt,
+                'missing_data_policy': missing_data_policy, 'data_partitions': data_partitions,
+            })
+            self.test_df = consumption_dynamics.consumption_data.copy()
+            self.data_audit = consumption_dynamics.data_audit
+        else:
+            self.test_df = pd.read_csv(
+                test_data_file,
+                index_col=0,
+                parse_dates=True
+            )
 
         self.test_start_date = self.test_df.index[0]
         self.test_end_date = self.test_df.index[-1]
@@ -104,7 +156,21 @@ class PCSEnv(gym.Env):
         pred_df = pd.read_csv(
             predictions_file,
             parse_dates=['timestamp']
-        ).set_index('timestamp').sort_index()
+        ).set_index('timestamp')
+        if self.data_mode == 'corrected':
+            validate_time_index(pred_df.index, dt, 'Predictions')
+            if not pred_df.index.equals(self.test_df.index):
+                raise ValueError("Prediction timestamps must match consumption timestamps")
+            if 'predicted_consumption' not in pred_df.columns:
+                raise ValueError("Predictions require predicted_consumption")
+            try:
+                pred_df = pred_df.apply(pd.to_numeric, errors='raise').astype(float)
+            except (TypeError, ValueError) as error:
+                raise ValueError("Predictions and features must be numeric and finite") from error
+            if not np.isfinite(pred_df.to_numpy()).all():
+                raise ValueError("Predictions and features contain non-finite values")
+        else:
+            pred_df = pred_df.sort_index()
 
         self.pred_df = pred_df
         self.prediction_cache = pred_df['predicted_consumption'].values
@@ -144,9 +210,8 @@ class PCSEnv(gym.Env):
         # ==============================================================
         if self.verbosity > 0:
             print("Creating consumption unit on testing data...")
-        consumption_dynamics = CSV_DataConsumptionDynamics(
-            params={'data_file': test_data_file}
-        )
+        if self.data_mode == 'legacy':
+            consumption_dynamics = CSV_DataConsumptionDynamics(params={'data_file': test_data_file})
         consumption_unit_config = {
             'data_file': test_data_file,
             'consumption_capacity': 6.0
@@ -178,6 +243,8 @@ class PCSEnv(gym.Env):
         # Observation space:
         # [storage, consumption, price] + [zero-padded predictions + mask] + [battery capacities] + [features]
         obs_dim = 3 + encoded_prediction_dim + 2 + self.num_features
+        if self.settlement_mode == 'corrected':
+            obs_dim += 1
         self.observation_space = spaces.Box(
             low=-np.inf,
             high=np.inf,
@@ -223,8 +290,15 @@ class PCSEnv(gym.Env):
         if self.cached_day_prices is None or self.current_datetime.date() != self.last_price_update_date:
             # ISO model always expects 48 timesteps (full day), regardless of PCS prediction_horizon
             iso_horizon = 48
-            predicted_consumption = self._get_predicted_consumption(iso_horizon)
-            day_features = self._get_feature_window(iso_horizon)  # The 336 values (48 * 7)
+            # Corrected daily commitments use midnight-aligned inputs and slots.
+            price_time = self.current_datetime
+            try:
+                if self.settlement_mode == 'corrected':
+                    self.current_datetime = pd.Timestamp(price_time).normalize()
+                predicted_consumption = self._get_predicted_consumption(iso_horizon)
+                day_features = self._get_feature_window(iso_horizon)
+            finally:
+                self.current_datetime = price_time
             iso_input = np.concatenate([predicted_consumption / 10.0, day_features])
 
             # Call the ISO brain ONLY ONCE per day for all price curves
@@ -241,10 +315,36 @@ class PCSEnv(gym.Env):
                 self.cached_buy_prices = None
                 self.cached_sell_prices = None
             
+            if self.data_mode == 'corrected':
+                for curve in (self.cached_day_prices, self.cached_buy_prices, self.cached_sell_prices):
+                    if curve is not None and (np.ndim(curve) != 1 or len(curve) == 0
+                                              or not np.isfinite(curve).all()):
+                        self.cached_day_prices = None
+                        raise ValueError("Price curves must contain finite values")
+                self.cached_price_start_index = self.get_step_index()
+            if self.settlement_mode == 'corrected':
+                purchase = self.cached_sell_prices if self.cached_sell_prices is not None else self.cached_day_prices
+                sale = self.cached_buy_prices if self.cached_buy_prices is not None else self.cached_day_prices
+                purchase, sale = np.asarray(purchase), np.asarray(sale)
+                if (purchase.shape != (48,) or sale.shape != (48,)
+                        or not np.isfinite(purchase).all() or not np.isfinite(sale).all()
+                        or np.any(sale < 0) or np.any(purchase < sale)
+                        or np.any(purchase > self.max_purchase_price)
+                        or np.any(sale > self.max_sale_price)):
+                    self.cached_day_prices = None
+                    raise ValueError("Tariffs require 48 finite slots and 0 <= sale <= purchase within configured bounds")
             self.last_price_update_date = self.current_datetime.date()
 
         intra_day_step = self.current_step % self.max_steps
+        if self.data_mode == 'corrected':
+            intra_day_step = self.get_step_index() - self.cached_price_start_index
+            for curve in (self.cached_day_prices, self.cached_buy_prices, self.cached_sell_prices):
+                if curve is not None and intra_day_step >= len(curve):
+                    raise ValueError("Price curve does not cover the selected timestep")
         
+        if self.settlement_mode == 'corrected':
+            intra_day_step = self.current_datetime.hour * 2 + self.current_datetime.minute // 30
+
         # Return appropriate price based on direction if asymmetric pricing is enabled
         if energy_flow_direction and self.cached_buy_prices is not None and self.cached_sell_prices is not None:
             if energy_flow_direction == 'buy':
@@ -265,11 +365,13 @@ class PCSEnv(gym.Env):
             raise TypeError("The provided strategy must be an instance of PriceCurveStrategy.")
 
         self.price_strategy = strategy
+        if self.data_mode == 'corrected':
+            self.cached_day_prices = None
+            self.last_price_update_date = None
 
     def _get_predicted_consumption(self, num_steps):
         """Get predicted consumption from preloaded cache."""
-        days_from_start = (self.current_datetime - self.test_start_date).total_seconds() / 86400
-        current_idx = int(days_from_start / self.dt)
+        current_idx = self.get_step_index()
         end_idx = current_idx + num_steps
 
         if end_idx > len(self.prediction_cache):
@@ -284,8 +386,7 @@ class PCSEnv(gym.Env):
         if self.feature_cache is None or self.num_features == 0:
             return np.array([])
 
-        days_from_start = (self.current_datetime - self.test_start_date).total_seconds() / 86400
-        current_idx = int(days_from_start / self.dt)
+        current_idx = self.get_step_index()
 
         if current_idx >= len(self.feature_cache):
             return self.feature_cache[-1]
@@ -299,6 +400,17 @@ class PCSEnv(gym.Env):
         This method handles time synchronization, internal PCS unit resets,
         and resets all financial/performance tracking metrics.
         """
+        if self.data_mode == 'corrected':
+            selected_date = self.current_datetime if start_date is None else pd.Timestamp(start_date)
+            if start_date is None and selected_date > self.test_end_date:
+                selected_date = self.test_start_date
+            index = self._get_data_index(selected_date)
+            if index + self.max_steps > len(self.test_df):
+                raise ValueError("Selected episode extends beyond consumption data")
+            self.current_datetime = selected_date
+            self.cached_day_prices = None
+            self.last_price_update_date = None
+
         # 1. Standard Gym reset for seeding
         super().reset(seed=seed)
 
@@ -312,10 +424,10 @@ class PCSEnv(gym.Env):
         # 3. Handle Time Synchronization
         # If a specific date is provided (e.g., during tandem training), use it.
         # Otherwise, check if we've hit the end of the test data and loop if necessary.
-        if start_date is not None:
+        if start_date is not None and self.data_mode == 'legacy':
             self.current_datetime = start_date
         else:
-            if self.current_datetime >= self.test_end_date:
+            if self.data_mode == 'legacy' and self.current_datetime >= self.test_end_date:
                 print("Reached end of dataset. Looping back to start.")
                 self.current_datetime = self.test_start_date
 
@@ -323,10 +435,12 @@ class PCSEnv(gym.Env):
         # Resets the battery to empty (or a configured initial level) and clears PCS logs.
         self.pcs.reset(initial_storage_unit_level=0)
         self.last_action = None
+        self._settled_prices = None
 
         # 5. Initialize consumption at timestep 0 without applying actions
         # This ensures consumption values are calculated before returning initial observation
-        initial_state = State({"time": 0.0})
+        initial_time = self.get_step_index() * self.dt if self.data_mode == 'corrected' else 0.0
+        initial_state = State({"time": initial_time})
         self.pcs.update(state=initial_state, actions=None)
 
         # 6. Return Initial Observation
@@ -347,6 +461,17 @@ class PCSEnv(gym.Env):
             truncated: False (standard Gym API).
             info: A dictionary containing diagnostic information for the step.
         """
+        if self.data_mode == 'corrected' and self.current_step >= self.max_steps:
+            raise ValueError("Episode has ended; reset before stepping again")
+
+        if self.settlement_mode == 'corrected':
+            values = np.asarray(action)
+            if values.shape != (1,) or not np.isfinite(values).all() or abs(float(values[0])) > 10:
+                raise ValueError("Action must contain one finite value in [-10, 10]")
+            # Validate and commit tariffs before mutating physical state.
+            purchase_price = self._get_current_price('buy')
+            sale_price = self._get_current_price('sell')
+
         # 1. Process the Agent's Action
         raw_action = float(action[0]) * self.action_scale
         self.last_action = raw_action
@@ -358,6 +483,8 @@ class PCSEnv(gym.Env):
         # 2. Update the Physical Simulation
         # Convert step count to a relative time for the PCS logic
         current_time_relative = self.current_step * self.dt
+        if self.data_mode == 'corrected':
+            current_time_relative = self.get_step_index() * self.dt
         state = State()
         state.set_attribute('time', current_time_relative)
 
@@ -375,31 +502,47 @@ class PCSEnv(gym.Env):
         except Exception:
             available_discharge_units = getattr(battery_entity, 'available_discharge', 0.0)
 
-        # 3. Calculate Financials using the Price Strategy
-        # Determine energy flow direction for asymmetric pricing
-        if energy_sold_or_bought > 0:
-            # Positive means battery charged (PCS bought energy from ISO)
-            energy_flow = 'buy'
-        elif energy_sold_or_bought < 0:
-            # Negative means battery discharged (PCS sold energy to ISO)
-            energy_flow = 'sell'
+        if self.settlement_mode == 'corrected':
+            # q is the actual clipped action returned by PCSUnit before balancing.
+            battery_service = storage_before + energy_sold_or_bought - storage_after
+            residual_demand = max(0.0, consumption_units - battery_service)
+            grid_exchange = energy_sold_or_bought + residual_demand
+            grid_import = max(grid_exchange, 0.0)
+            grid_export = max(-grid_exchange, 0.0)
+            net_cost = purchase_price * grid_import - sale_price * grid_export
+            step_money = -net_cost
+            # Residual energy is grid-served; no shortage or reserve cost.
+            shortage = False
+            step_penalty = 0.0
+            current_price = purchase_price if grid_exchange >= 0 else sale_price
+            self._settled_prices = (purchase_price, sale_price)
+
         else:
-            # No energy flow
-            energy_flow = None
+            # 3. Calculate Financials using the Price Strategy
+            # Determine energy flow direction for asymmetric pricing
+            if energy_sold_or_bought > 0:
+                # Positive means battery charged (PCS bought energy from ISO)
+                energy_flow = 'buy'
+            elif energy_sold_or_bought < 0:
+                # Negative means battery discharged (PCS sold energy to ISO)
+                energy_flow = 'sell'
+            else:
+                # No energy flow
+                energy_flow = None
         
-        # Fetch the appropriate price based on energy flow direction
-        current_price = self._get_current_price(energy_flow_direction=energy_flow)
+            # Fetch the appropriate price based on energy flow direction
+            current_price = self._get_current_price(energy_flow_direction=energy_flow)
 
-        # Money earned: (Price * Energy Sold). If energy is bought, this is negative.
-        step_money = current_price * -energy_sold_or_bought
+            # Money earned: (Price * Energy Sold). If energy is bought, this is negative.
+            step_money = current_price * -energy_sold_or_bought
 
-        # 4. Handle Penalties
-        shortage = consumption_units > available_discharge_units
-        step_penalty = 0.0
-        if shortage:
-            step_penalty = self.shortage_penalty
-            self.shortage_count += 1
-            self.total_shortage_penalty += step_penalty
+            # 4. Handle Penalties
+            shortage = consumption_units > available_discharge_units
+            step_penalty = 0.0
+            if shortage:
+                step_penalty = self.shortage_penalty
+                self.shortage_count += 1
+                self.total_shortage_penalty += step_penalty
 
         # 5. Update Cumulative Metrics
         self.total_money_earned += step_money
@@ -430,6 +573,23 @@ class PCSEnv(gym.Env):
             'total_money_so_far': self.total_money_earned
         }
 
+        if self.settlement_mode == 'corrected':
+            info.update({
+                'settlement_mode': 'corrected',
+                'realized_action_units': energy_sold_or_bought,
+                'battery_service_units': battery_service,
+                'residual_demand_units': residual_demand,
+                'unserved_energy_units': 0.0,
+                'grid_exchange_units': grid_exchange,
+                'grid_import_units': grid_import,
+                'grid_export_units': grid_export,
+                'purchase_price': purchase_price,
+                'sale_price': sale_price,
+                'net_electricity_cost': net_cost,
+                'step_penalty': 0.0,
+                'reserve_penalty': 0.0,
+                'counterparty_receipt': net_cost,
+            })
         return obs, reward, terminated, truncated, info
 
     def _get_feature_window(self, num_steps):
@@ -438,8 +598,7 @@ class PCSEnv(gym.Env):
             return np.array([])
 
         # Calculate starting index in the cache
-        days_from_start = (self.current_datetime - self.test_start_date).total_seconds() / 86400
-        current_idx = int(days_from_start / self.dt)
+        current_idx = self.get_step_index()
         end_idx = current_idx + num_steps
 
         if end_idx > len(self.feature_cache):
@@ -464,7 +623,14 @@ class PCSEnv(gym.Env):
         # Base PCS observations
         current_storage = self.pcs.get_total_storage() / 100.0
         current_consumption = self.pcs.get_consumption() / 10.0
-        current_price = self._get_current_price()
+        current_price = self._get_current_price() if self.settlement_mode == 'legacy' else None
+        if self.settlement_mode == 'corrected':
+            if self.current_step >= self.max_steps and self._settled_prices is not None:
+                prices = self._settled_prices  # terminal observation has no next action
+            else:
+                prices = (self._get_current_price('buy'), self._get_current_price('sell'))
+        else:
+            prices = (current_price,)
 
         # Get raw predictions and normalize
         predicted_consumption = self._get_predicted_consumption(self.prediction_horizon) / 10.0
@@ -502,14 +668,17 @@ class PCSEnv(gym.Env):
 
         # Concatenate: [storage, consumption, price] + [zero-padded] + [mask] + [capacities] + [features]
         obs = np.concatenate([
-            [current_storage, current_consumption, current_price],
+            [current_storage, current_consumption, *prices],
             zero_padded,
             mask,
             [available_charge, available_discharge],
             current_features
         ])
 
-        return obs.astype(np.float32)
+        obs = obs.astype(np.float32)
+        if self.data_mode == 'corrected' and not np.isfinite(obs).all():
+            raise ValueError("Observation contains non-finite consumption, price or features")
+        return obs
 
     def render(self, action=None, verbosity=None):
         """
@@ -696,10 +865,25 @@ class PCSEnv(gym.Env):
             return data
         
         return data
+    def _get_data_index(self, timestamp, allow_end=False):
+        """Return an exact sample index, allowing the terminal timestamp when requested."""
+        timestamp = pd.Timestamp(timestamp)
+        if pd.isna(timestamp):
+            raise ValueError("Selected date must be a finite consumption timestamp")
+        offset = timestamp - self.test_start_date
+        interval = pd.Timedelta(days=self.dt)
+        index, remainder = divmod(offset.value, interval.value)
+        upper_bound = len(self.test_df) if allow_end else len(self.test_df) - 1
+        if remainder or index < 0 or index > upper_bound:
+            raise ValueError("Selected date is outside consumption data or off the timestep grid")
+        return int(index)
+
     def get_step_index(self) -> int:
         """
         Return the global half-hour step index since test_start_date.
         """
+        if self.data_mode == 'corrected':
+            return self._get_data_index(self.current_datetime, allow_end=True)
         days_from_start = (self.current_datetime - self.test_start_date).total_seconds() / 86400
         return int(days_from_start / self.dt)
 
@@ -708,6 +892,12 @@ class PCSEnv(gym.Env):
         Set the environment's current_datetime and intra-day current_step
         from a global half-hour index.
         """
+        if self.data_mode == 'corrected':
+            if not isinstance(idx, (int, np.integer)) or idx < 0 or idx >= len(self.test_df):
+                raise ValueError("Step index must select a consumption sample")
+            self.current_datetime = self.test_df.index[idx]
+            self.current_step = int(idx % self.max_steps)
+            return
         idx = int(idx)
         self.current_datetime = self.test_start_date + timedelta(minutes=30 * idx)
         self.current_step = int(idx % self.max_steps)

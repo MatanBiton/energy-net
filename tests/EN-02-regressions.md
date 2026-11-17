@@ -2,7 +2,8 @@
 
 These tests exercise the real PCSEnv, PCSUnit, battery and CSV consumption path
 using temporary synthetic half-hourly CSVs and deterministic price curves.
-They do not modify research data or production simulation code. Quantities are
+They do not modify research data. EN-04 now runs these cases through the corrected
+data path. Quantities are
 PCSEnv internal units; no kW/kWh conversion is implied.
 
 Run from the repository root using the project environment:
@@ -11,18 +12,19 @@ Run from the repository root using the project environment:
 conda run -n en python -m pytest -q -rx tests/unittests/test_en02_regressions.py
 ```
 
-The baseline result is 13 passed and 5 expected failures. The expected failures
-are strict: an unexpected pass fails the suite so its marker must be reviewed
+The historical EN-02 baseline was 13 passed and 5 expected failures. After EN-04,
+the corrected path has 16 passed and 2 expected failures: date selection and
+missing-data rejection now pass. The remaining shortage failures are strict: an unexpected pass fails the suite so its marker must be reviewed
 when the relevant repair or modeling decision lands. Only assertion failures
 are expected; unrelated exceptions still fail normally.
 
-To expose the original failures directly:
+To expose the remaining shortage assertions directly:
 
 ```sh
 conda run -n en python -m pytest -q --runxfail --tb=short tests/unittests/test_en02_regressions.py
 ```
 
-That diagnostic command deliberately exits with failure: 5 failed, 13 passed.
+That diagnostic command deliberately exits with failure: 2 failed, 16 passed.
 
 ## Confirmed reproductions and conditional expectations
 
@@ -31,10 +33,10 @@ That diagnostic command deliberately exits with failure: 5 failed, 13 passed.
   same discrepancy occurs at exactly enough storage (3 for demand 3). These
   tests assume shortage means battery-uncovered demand. A reserve interpretation
   is a separate modeling decision, pending EN-03; these are not approved repairs.
-- Date: selecting the second day returns first-day consumption at both reset
+- Date (historical defect, repaired in corrected mode): selecting the second day returns first-day consumption at both reset
   and step. The CSV dynamics itself selects both days correctly; environment
   wiring passes episode-relative time without the selected date offset.
-- Missing data: a NaN at the existing timestamp for step 22 propagates into the
+- Missing data (historical defect, rejected in corrected mode): a NaN at the existing timestamp for step 22 propagates into the
   observation. The test allows explicit data rejection or finite handling; it
   does not select an interpolation policy. Prediction values are finite, which
   isolates the consumption path. Raw research CSVs remain untouched.

@@ -2,6 +2,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 from energy_net.common import defs
+from energy_net.common.demand_data import load_demand_data
 from energy_net.foundation.dynamics import EnergyDynamics
 from energy_net.common.utils import load_data_from_yaml, interpolate_value
 import pandas as pd
@@ -159,6 +160,17 @@ class CSV_DataConsumptionDynamics(ConsumptionDynamics):
         self.data_file = self.params.get('data_file')
         if not self.data_file:
             raise ValueError("No data file specified for DateTimeDrivenConsumptionDynamics")
+        self.data_mode = self.params.get('data_mode', 'legacy')
+        if self.data_mode not in ('legacy', 'corrected'):
+            raise ValueError("Consumption data_mode must be 'legacy' or 'corrected'")
+        if self.data_mode == 'corrected':
+            self.dt = self.params.get('dt', 0.5 / 24)
+            self.consumption_data, self.data_audit = load_demand_data(
+                self.data_file, self.dt,
+                self.params.get('missing_data_policy', 'error'),
+                self.params.get('data_partitions'),
+            )
+            return
         self.consumption_data = self._load_consumption_data(self.data_file)
         self.total_days = int(self.consumption_data.index[-1])+1
 
@@ -201,6 +213,16 @@ class CSV_DataConsumptionDynamics(ConsumptionDynamics):
             float: The consumption value at the specified date/time.
         """
         query_time = kwargs.get('time')
+        if self.data_mode == 'corrected':
+            if query_time is None or not np.isfinite(query_time):
+                raise ValueError("Consumption query time must be finite")
+            step = query_time / self.dt
+            index = int(round(step))
+            if not np.isclose(step, index, rtol=0, atol=1e-7):
+                raise ValueError("Consumption query must match the configured timestep")
+            if index < 0 or index >= len(self.consumption_data):
+                raise ValueError("Consumption query is outside the dataset")
+            return float(self.consumption_data['Consumption'].iloc[index])
 
         # Ensure the query time wraps around within the total days to handle dates that go past the data range
         query_time = query_time%self.total_days
